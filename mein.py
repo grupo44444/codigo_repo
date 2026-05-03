@@ -13,7 +13,7 @@ def modificar():
     palabra.set("vamos con toda   "+ entrada.get())
 tk.Button(
     ventana,
-    text = "escribe tu nombre en el ultimo recuadro \n oprime este boton luego y mira un pequeño mensaje",
+    text = "escribe tu nombre en el ultimo recuadro \n entonces oprime este boton luego y mira un pequeño mensaje",
     font = ("arial", 14),
     bg = "#00a8e8",
     fg = "white",
