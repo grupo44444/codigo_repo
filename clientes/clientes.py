@@ -9,7 +9,7 @@ class Cliente:
 
     lista_clientes = []
 
-    def _init_(
+    def __init__(
 
         self,
         nombre,
