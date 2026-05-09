@@ -1,131 +1,131 @@
 from excepciones import (
-ReservaError,
-registrar_info,
-registrar_error
+    ReservaError,
+    registrar_info,
+    registrar_error
 )
 
 
 class Reserva:
 
-lista_reservas = []
+    lista_reservas = []
 
-def __init__(
+    def __init__(
 
-self,
-cliente,
-servicio
+        self,
+        cliente,
+        servicio
 
-):
+    ):
 
-self.cliente = cliente
+        self.cliente = cliente
 
-self.servicio = servicio
+        self.servicio = servicio
 
-self.estado = "Pendiente"
+        self.estado = "Pendiente"
 
-self.pagado = False
+        self.pagado = False
 
-Reserva.lista_reservas.append(self)
+        Reserva.lista_reservas.append(self)
 
-# ==================================
-# CONFIRMAR
-# ==================================
+    # ==================================
+    # CONFIRMAR
+    # ==================================
 
-def confirmar(self):
+    def confirmar(self):
 
-try:
+        try:
 
-if not self.servicio.disponible:
+            if not self.servicio.disponible:
 
-raise ReservaError(
-"Servicio no disponible"
-)
+                raise ReservaError(
+                    "Servicio no disponible"
+                )
 
-self.estado = "Confirmada"
+            self.estado = "Confirmada"
 
-registrar_info(
+            registrar_info(
 
-f"Reserva confirmada "
-f"para {self.cliente.nombre}"
+                f"Reserva confirmada "
+                f"para {self.cliente.nombre}"
 
-)
+            )
 
-except ReservaError as error:
+        except ReservaError as error:
 
-registrar_error(str(error))
+            registrar_error(str(error))
 
-raise
+            raise
 
-# ==================================
-# CANCELAR
-# ==================================
+    # ==================================
+    # CANCELAR
+    # ==================================
 
-def cancelar(self):
+    def cancelar(self):
 
-self.estado = "Cancelada"
+        self.estado = "Cancelada"
 
-registrar_info(
+        registrar_info(
 
-f"Reserva cancelada "
-f"para {self.cliente.nombre}"
+            f"Reserva cancelada "
+            f"para {self.cliente.nombre}"
 
-)
+        )
 
-# ==================================
-# PAGAR
-# ==================================
+    # ==================================
+    # PAGAR
+    # ==================================
 
-def pagar(self):
+    def pagar(self):
 
-if self.estado != "Confirmada":
+        if self.estado != "Confirmada":
 
-raise ReservaError(
-"La reserva no está confirmada"
-)
+            raise ReservaError(
+                "La reserva no está confirmada"
+            )
 
-self.pagado = True
+        self.pagado = True
 
-registrar_info(
+        registrar_info(
 
-f"Pago realizado "
-f"por {self.cliente.nombre}"
+            f"Pago realizado "
+            f"por {self.cliente.nombre}"
 
-)
+        )
 
-# ==================================
-# CALCULAR TOTAL
-# ==================================
+    # ==================================
+    # CALCULAR TOTAL
+    # ==================================
 
-def calcular_total(
+    def calcular_total(
 
-self,
-impuesto=0,
-descuento=0
+        self,
+        impuesto=0,
+        descuento=0
 
-):
+    ):
 
-total = self.servicio.calcular_costo()
+        total = self.servicio.calcular_costo()
 
-total += total * impuesto
+        total += total * impuesto
 
-total -= descuento
+        total -= descuento
 
-return total
+        return total
 
-# ==================================
-# MOSTRAR RESERVA
-# ==================================
+    # ==================================
+    # MOSTRAR RESERVA
+    # ==================================
 
-def mostrar_reserva(self):
+    def mostrar_reserva(self):
 
-return (
+        return (
 
-f"\nCliente: {self.cliente.nombre}\n"
+            f"\nCliente: {self.cliente.nombre}\n"
 
-f"Servicio: {self.servicio.nombre}\n"
+            f"Servicio: {self.servicio.nombre}\n"
 
-f"Estado: {self.estado}\n"
+            f"Estado: {self.estado}\n"
 
-f"Pagado: {self.pagado}"
+            f"Pagado: {self.pagado}"
 
-)
+        )
