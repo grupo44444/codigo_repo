@@ -1,5 +1,5 @@
 from excepciones import (
-    ClienteError,
+    ErrorCliente,
     registrar_info,
     registrar_error
 )
@@ -40,23 +40,23 @@ class Cliente:
 
             if len(self.__nombre.strip()) < 3:
 
-                raise ClienteError(
+                raise ErrorCliente(
                     "Nombre inválido"
                 )
 
             if not self.__cedula.isdigit():
 
-                raise ClienteError(
+                raise ErrorCliente(
                     "Cédula inválida"
                 )
 
             if "@" not in self.__correo:
 
-                raise ClienteError(
+                raise ErrorCliente(
                     "Correo inválido"
                 )
 
-        except ClienteError as error:
+        except ErrorCliente as error:
 
             registrar_error(str(error))
 

@@ -177,3 +177,12 @@ class AsesoriaEspecializada(Servicio):
         return (f"Asesoría {self._especialidad.capitalize()} "
                 f"| Nivel: {self._nivel} "
                 f"| Precio/sesión: ${self._precio_hora:,.0f} COP")
+
+
+# ======================================
+# GESTOR DEL SISTEMA
+# ======================================
+class GestorSistema:
+
+    def __init__(self):
+        pass
