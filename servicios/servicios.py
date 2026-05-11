@@ -1,115 +1,179 @@
+"""
+=============================================================
+  servicios.py — Clases de servicios Software FJ
+=============================================================
+"""
+
 from abc import ABC, abstractmethod
+from excepciones import ErrorServicio, ErrorParametro, ErrorDisponibilidad
 
 
+# ======================================
+# CLASE ABSTRACTA BASE
+# ======================================
 class Servicio(ABC):
 
-    def __init__(
+    IVA = 0.19  # 19% IVA Colombia
 
-        self,
-        nombre,
-        precio
+    def __init__(self, id_servicio: str, nombre: str, precio_hora: float):
 
-    ):
+        if not id_servicio or not isinstance(id_servicio, str):
+            raise ErrorParametro("El ID del servicio no puede estar vacío.")
 
-        self.nombre = nombre
-        self.precio = precio
+        if not nombre or len(nombre.strip()) < 3:
+            raise ErrorServicio("El nombre del servicio debe tener al menos 3 caracteres.")
 
-        self.disponible = True
+        if not isinstance(precio_hora, (int, float)) or precio_hora <= 0:
+            raise ErrorServicio("El precio por hora debe ser un número positivo.")
+
+        self._id_servicio = id_servicio
+        self._nombre      = nombre.strip()
+        self._precio_hora = float(precio_hora)
+        self._disponible  = True
+
+    # ── propiedades ───────────────────────────────────────────
+    @property
+    def id_servicio(self):
+        return self._id_servicio
+
+    @property
+    def nombre(self):
+        return self._nombre
+
+    @property
+    def precio_hora(self):
+        return self._precio_hora
+
+    @property
+    def disponible(self):
+        return self._disponible
+
+    # ── calcular_costo (parámetros opcionales = sobrecarga) ───
+    def calcular_costo(self, horas: float,
+                       descuento: float = 0.0,
+                       aplicar_iva: bool = True) -> float:
+        try:
+            if horas <= 0:
+                raise ErrorParametro("Las horas deben ser un valor positivo.")
+            base  = self._precio_hora * horas
+            base  = max(0.0, base - descuento)
+            total = base * (1 + self.IVA) if aplicar_iva else base
+            return round(total, 2)
+        except ErrorParametro:
+            raise
+        except Exception as e:
+            raise ErrorServicio(f"Error en cálculo de costo: {e}") from e
 
     @abstractmethod
-    def calcular_costo(self):
+    def validar_parametros(self, horas: float) -> bool:
         pass
 
     @abstractmethod
-    def descripcion(self):
+    def descripcion(self) -> str:
         pass
+
+    def __str__(self):
+        return self.descripcion()
 
 
 # ======================================
 # RESERVA SALA
 # ======================================
-
 class ReservaSala(Servicio):
 
-    def __init__(self, horas):
+    MAX_HORAS = 12
 
-        super().__init__(
-            "Reserva Sala",
-            50000
-        )
+    def __init__(self, id_servicio: str, nombre: str,
+                 precio_hora: float, capacidad: int):
 
-        self.horas = horas
+        super().__init__(id_servicio, nombre, precio_hora)
 
-    def calcular_costo(self):
+        if not isinstance(capacidad, int) or capacidad <= 0:
+            raise ErrorServicio("La capacidad debe ser un entero positivo.")
 
-        return (
-            self.precio *
-            self.horas
-        )
+        self._capacidad = capacidad
 
-    def descripcion(self):
+    @property
+    def capacidad(self):
+        return self._capacidad
 
-        return (
-            f"Sala reservada "
-            f"{self.horas} horas"
-        )
+    def validar_parametros(self, horas: float) -> bool:
+        if horas <= 0 or horas > self.MAX_HORAS:
+            raise ErrorDisponibilidad(
+                f"ReservaSala: las horas deben estar entre 1 y {self.MAX_HORAS}.")
+        return True
+
+    def descripcion(self) -> str:
+        return (f"Sala de Conferencias | Capacidad: {self._capacidad} personas "
+                f"| Precio/hora: ${self._precio_hora:,.0f} COP")
 
 
 # ======================================
 # ALQUILER EQUIPO
 # ======================================
-
 class AlquilerEquipo(Servicio):
 
-    def __init__(self, dias):
+    TIPOS_VALIDOS = {"laptop", "proyector", "camara", "tablet"}
 
-        super().__init__(
-            "Alquiler Equipo",
-            30000
-        )
+    def __init__(self, id_servicio: str, nombre: str,
+                 precio_hora: float, tipo_equipo: str, unidades: int):
 
-        self.dias = dias
+        super().__init__(id_servicio, nombre, precio_hora)
 
-    def calcular_costo(self):
+        if tipo_equipo.lower() not in self.TIPOS_VALIDOS:
+            raise ErrorServicio(
+                f"Tipo de equipo inválido: '{tipo_equipo}'. "
+                f"Válidos: {self.TIPOS_VALIDOS}")
 
-        return (
-            self.precio *
-            self.dias
-        )
+        if not isinstance(unidades, int) or unidades <= 0:
+            raise ErrorServicio("Las unidades deben ser un entero positivo.")
 
-    def descripcion(self):
+        self._tipo_equipo = tipo_equipo.lower()
+        self._unidades    = unidades
 
-        return (
-            f"Equipo alquilado "
-            f"{self.dias} días"
-        )
+    def validar_parametros(self, horas: float) -> bool:
+        if horas <= 0:
+            raise ErrorDisponibilidad("AlquilerEquipo: las horas deben ser positivas.")
+        if self._unidades == 0:
+            raise ErrorDisponibilidad("No hay unidades disponibles para alquilar.")
+        return True
+
+    def descripcion(self) -> str:
+        return (f"Alquiler {self._tipo_equipo.capitalize()} "
+                f"| Unidades: {self._unidades} "
+                f"| Precio/hora: ${self._precio_hora:,.0f} COP")
 
 
 # ======================================
-# ASESORÍA
+# ASESORÍA ESPECIALIZADA
 # ======================================
-
 class AsesoriaEspecializada(Servicio):
 
-    def __init__(self, sesiones):
+    NIVELES      = {"basico", "intermedio", "avanzado"}
+    MAX_SESIONES = 20
 
-        super().__init__(
-            "Asesoría Especializada",
-            80000
-        )
+    def __init__(self, id_servicio: str, nombre: str,
+                 precio_hora: float, especialidad: str, nivel: str):
 
-        self.sesiones = sesiones
+        super().__init__(id_servicio, nombre, precio_hora)
 
-    def calcular_costo(self):
+        if not especialidad or len(especialidad.strip()) < 3:
+            raise ErrorServicio("La especialidad debe tener al menos 3 caracteres.")
 
-        return (
-            self.precio *
-            self.sesiones
-        )
+        if nivel.lower() not in self.NIVELES:
+            raise ErrorServicio(
+                f"Nivel inválido: '{nivel}'. Válidos: {self.NIVELES}")
 
-    def descripcion(self):
+        self._especialidad = especialidad.strip()
+        self._nivel        = nivel.lower()
 
-        return (
-            f"Asesoría "
-            f"{self.sesiones} sesiones"
-        )
+    def validar_parametros(self, horas: float) -> bool:
+        if horas <= 0 or horas > self.MAX_SESIONES:
+            raise ErrorDisponibilidad(
+                f"Asesoria: máximo {self.MAX_SESIONES} sesiones.")
+        return True
+
+    def descripcion(self) -> str:
+        return (f"Asesoría {self._especialidad.capitalize()} "
+                f"| Nivel: {self._nivel} "
+                f"| Precio/sesión: ${self._precio_hora:,.0f} COP")
