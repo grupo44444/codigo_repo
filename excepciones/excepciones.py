@@ -1,10 +1,18 @@
-class ClienteError(Exception):
+class ErrorCliente(Exception):
     pass
 
 
-class ServicioError(Exception):
+class ErrorServicio(Exception):
     pass
 
 
-class ReservaError(Exception):
+class ErrorReserva(Exception):
+    pass
+
+
+class ErrorParametro(Exception):
+    pass
+
+
+class ErrorDisponibilidad(Exception):
     pass

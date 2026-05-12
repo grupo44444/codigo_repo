@@ -1,0 +1,2 @@
+2026-05-10 22:39:24,330 - INFO - Cliente registrado: Arturo 
+2026-05-10 23:17:56,562 - ERROR - Nombre inválido

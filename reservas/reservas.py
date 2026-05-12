@@ -1,5 +1,5 @@
 from excepciones import (
-    ReservaError,
+    ErrorReserva,
     registrar_info,
     registrar_error
 )
@@ -37,7 +37,7 @@ class Reserva:
 
             if not self.servicio.disponible:
 
-                raise ReservaError(
+                raise ErrorReserva(
                     "Servicio no disponible"
                 )
 
@@ -50,7 +50,7 @@ class Reserva:
 
             )
 
-        except ReservaError as error:
+        except ErrorReserva as error:
 
             registrar_error(str(error))
 
@@ -79,7 +79,7 @@ class Reserva:
 
         if self.estado != "Confirmada":
 
-            raise ReservaError(
+            raise ErrorReserva(
                 "La reserva no está confirmada"
             )
 
