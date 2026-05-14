@@ -185,4 +185,43 @@ class AsesoriaEspecializada(Servicio):
 class GestorSistema:
 
     def __init__(self):
-        pass
+
+        self._clientes = {}
+        self._servicios = {}
+        self._reservas = {}
+
+    # =========================
+    # CLIENTES
+    # =========================
+
+    def agregar_cliente(self, id_cliente, cliente):
+
+        self._clientes[id_cliente] = cliente
+
+    def obtener_cliente(self, id_cliente):
+
+        return self._clientes.get(id_cliente)
+
+    # =========================
+    # SERVICIOS
+    # =========================
+
+    def agregar_servicio(self, id_servicio, servicio):
+
+        self._servicios[id_servicio] = servicio
+
+    def obtener_servicio(self, id_servicio):
+
+        return self._servicios.get(id_servicio)
+
+    # =========================
+    # RESERVAS
+    # =========================
+
+    def agregar_reserva(self, id_reserva, reserva):
+
+        self._reservas[id_reserva] = reserva
+
+    def obtener_reserva(self, id_reserva):
+
+        return self._reservas.get(id_reserva)

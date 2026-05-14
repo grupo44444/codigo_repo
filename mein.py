@@ -8,13 +8,18 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+from clientes import Cliente
+
 from servicios import (
-    Cliente,
     ReservaSala,
     AlquilerEquipo,
     AsesoriaEspecializada,
-    Reserva,
-    GestorSistema,
+    GestorSistema
+)
+
+from reservas import Reserva
+
+from excepciones import (
     ErrorCliente,
     ErrorServicio,
     ErrorReserva,
@@ -51,8 +56,8 @@ def crear_reserva():
             raise ErrorParametro("Todos los campos son obligatorios.")
 
         id_cliente = _nuevo_id("cliente")
-        cliente = Cliente(id_cliente, nombre, correo, cedula)
-        gestor._clientes[id_cliente] = cliente
+        cliente = Cliente(nombre, cedula, correo)
+        gestor.agregar_cliente(id_cliente, cliente)
 
         try:
             cantidad = float(cantidad_str)
@@ -89,7 +94,7 @@ def crear_reserva():
                 nivel="intermedio"
             )
 
-        gestor._servicios[id_servicio] = servicio
+        gestor.agregar_servicio(id_servicio, servicio)
 
         id_reserva = _nuevo_id("reserva")
         reserva = Reserva(id_reserva, cliente, servicio, cantidad, descuento=0.0)
@@ -99,8 +104,13 @@ def crear_reserva():
 
         total = reserva.costo_total
 
-        texto_resultado.config(
-            text=(
+        texto_resultado.config(state="normal")
+
+        texto_resultado.delete("1.0", "end")
+
+        texto_resultado.insert(
+            "end",
+            (
                 f"✔ RESERVA CREADA\n\n"
                 f"ID Reserva: {id_reserva}\n"
                 f"Cliente:    {cliente.nombre}\n"
@@ -110,6 +120,8 @@ def crear_reserva():
                 f"Total:      ${total:,.2f} COP (IVA incluido)"
             )
         )
+
+        texto_resultado.config(state="disabled")
 
     except (ErrorCliente, ErrorServicio, ErrorReserva,
             ErrorParametro, ErrorDisponibilidad) as e:
@@ -128,16 +140,21 @@ def pagar_reserva():
             return
 
         reserva = reservas_creadas[-1]
-        reserva.procesar()
+        reserva.pagar()
 
         messagebox.showinfo(
             "Pago realizado",
             f"Reserva {reserva.id_reserva} procesada exitosamente.\n"
             f"Total cobrado: ${reserva.costo_total:,.2f} COP"
         )
-        texto_resultado.config(
-            text=texto_resultado.cget("text") + f"\n\n► Estado: PROCESADA"
+        texto_resultado.config(state="normal")
+
+        texto_resultado.insert(
+            "end",
+            "\n\n► Estado: PROCESADA"
         )
+
+        texto_resultado.config(state="disabled")
 
     except ErrorReserva as e:
         messagebox.showerror("Error al procesar", str(e))
@@ -155,15 +172,19 @@ def cancelar_reserva():
             return
 
         reserva = reservas_creadas[-1]
-        reserva.cancelar("Cancelado desde la interfaz gráfica")
-
+        reserva.cancelar()
         messagebox.showinfo(
             "Reserva cancelada",
             f"La reserva {reserva.id_reserva} fue cancelada."
         )
-        texto_resultado.config(
-            text=texto_resultado.cget("text") + f"\n\n✘ Estado: CANCELADA"
+        texto_resultado.config(state="normal")
+
+        texto_resultado.insert(
+            "end",
+            "\n\n✘ Estado: CANCELADA"
         )
+
+        texto_resultado.config(state="disabled")
 
     except ErrorReserva as e:
         messagebox.showerror("Error al cancelar", str(e))
@@ -233,11 +254,33 @@ tk.Button(
 
 tk.Label(frame, text="─" * 60, fg="#CCCCCC").pack(pady=(15, 5))
 
-texto_resultado = tk.Label(
-    frame, text="Complete el formulario y presione 'Crear Reserva'.",
-    justify="left", anchor="w", wraplength=540,
+# ======================================
+# ÁREA DE RESULTADOS CON SCROLL
+# ======================================
+
+frame_resultado = tk.Frame(frame)
+frame_resultado.pack(fill="both", expand=True, pady=5)
+
+scrollbar = tk.Scrollbar(frame_resultado)
+scrollbar.pack(side="right", fill="y")
+
+texto_resultado = tk.Text(
+    frame_resultado,
+    height=12,
+    wrap="word",
+    yscrollcommand=scrollbar.set,
     font=("Courier", 10)
 )
-texto_resultado.pack(fill="x", pady=5)
+
+texto_resultado.pack(side="left", fill="both", expand=True)
+
+scrollbar.config(command=texto_resultado.yview)
+
+texto_resultado.insert(
+    "end",
+    "Complete el formulario y presione 'Crear Reserva'."
+)
+
+texto_resultado.config(state="disabled")
 
 ventana.mainloop()
