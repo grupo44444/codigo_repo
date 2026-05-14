@@ -1,2 +1,8 @@
 2026-05-10 22:39:24,330 - INFO - Cliente registrado: Arturo 
 2026-05-10 23:17:56,562 - ERROR - Nombre inválido
+2026-05-14 13:42:40,408 - INFO - Cliente registrado: carlos coral
+2026-05-14 13:42:40,408 - INFO - Reserva confirmada para carlos coral
+2026-05-14 13:42:46,500 - INFO - Reserva cancelada para carlos coral
+2026-05-14 13:53:46,670 - INFO - Cliente registrado: carlos
+2026-05-14 13:53:46,673 - INFO - Reserva confirmada para carlos
+2026-05-14 13:53:55,607 - INFO - Reserva cancelada para carlos

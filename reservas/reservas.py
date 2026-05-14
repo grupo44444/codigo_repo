@@ -12,18 +12,29 @@ class Reserva:
     def __init__(
 
         self,
+        id_reserva,
         cliente,
-        servicio
+        servicio,
+        cantidad,
+        descuento=0.0
 
     ):
+
+        self.id_reserva = id_reserva
 
         self.cliente = cliente
 
         self.servicio = servicio
 
+        self.cantidad = cantidad
+
+        self.descuento = descuento
+
         self.estado = "Pendiente"
 
         self.pagado = False
+
+        self.costo_total = self.calcular_total()
 
         Reserva.lista_reservas.append(self)
 
@@ -85,6 +96,8 @@ class Reserva:
 
         self.pagado = True
 
+        self.estado = "Procesada"
+
         registrar_info(
 
             f"Pago realizado "
@@ -96,24 +109,17 @@ class Reserva:
     # CALCULAR TOTAL
     # ==================================
 
-    def calcular_total(
+    def calcular_total(self):
 
-        self,
-        impuesto=0,
-        descuento=0
+        return self.servicio.calcular_costo(
 
-    ):
+            self.cantidad,
+            descuento=self.descuento
 
-        total = self.servicio.calcular_costo()
-
-        total += total * impuesto
-
-        total -= descuento
-
-        return total
+        )
 
     # ==================================
-    # MOSTRAR RESERVA
+    # MOSTRAR
     # ==================================
 
     def mostrar_reserva(self):
@@ -126,6 +132,8 @@ class Reserva:
 
             f"Estado: {self.estado}\n"
 
-            f"Pagado: {self.pagado}"
+            f"Pagado: {self.pagado}\n"
+
+            f"Total: ${self.costo_total:,.2f}"
 
         )
