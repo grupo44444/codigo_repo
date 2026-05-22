@@ -166,6 +166,7 @@ def pagar_reserva():
 # CANCELAR
 # ======================================
 def cancelar_reserva():
+    """cancelar una reserva del programa """
     try:
         if not reservas_creadas:
             messagebox.showwarning("Sin reservas", "No hay reservas activas.")

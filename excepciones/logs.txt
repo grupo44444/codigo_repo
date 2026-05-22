@@ -6,3 +6,7 @@
 2026-05-14 13:53:46,670 - INFO - Cliente registrado: carlos
 2026-05-14 13:53:46,673 - INFO - Reserva confirmada para carlos
 2026-05-14 13:53:55,607 - INFO - Reserva cancelada para carlos
+2026-05-16 18:04:04,610 - ERROR - Correo inválido
+2026-05-16 18:04:19,783 - INFO - Cliente registrado: carlos
+2026-05-16 18:04:19,784 - INFO - Reserva confirmada para carlos
+2026-05-16 18:04:42,618 - INFO - Pago realizado por carlos
